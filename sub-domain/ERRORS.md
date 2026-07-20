@@ -1,5 +1,13 @@
 # ERRORS
 
+## 2026-07-20 — GitHub Actions Pages deploy gagal `npx failed with exit code 1`
+- context: Workflow `.github/workflows/deploy-cloudflare-pages.yml` jalan di push ke main.
+- symptom: `cloudflare/wrangler-action@v3` install Wrangler `3.90.0` lalu `Error: The process '/usr/local/bin/npx' failed with exit code 1`.
+- root cause: Workflow deploy `pages deploy .` dari repo root (bukan folder static site), dan tanpa `wranglerVersion` action jatuh ke Wrangler 3.90.0 lama yang bermasalah di runner Node 24.
+- fix: Pin `wranglerVersion: "4"` dan ganti target jadi `pages deploy static-site-backup --project-name=hoscademy --branch=main`.
+- smoke test: Trigger `workflow_dispatch` di GitHub Actions; job Deploy harus hijau dan Pages project `hoscademy` dapat deployment baru. Belum diverifikasi (butuh push).
+- prevention note: Selalu set `wranglerVersion` eksplisit di wrangler-action, dan arahkan `pages deploy` ke folder output statis, bukan repo root. App utama deploy via `cloudflare-deploy.yml` (Workers), bukan Pages.
+
 ## 2026-07-20 — Runtime error saat schema Supabase baru belum ada
 - context: Buka page App Router setelah env diarahkan ke project Supabase baru yang belum punya tabel app.
 - symptom: Next.js menampilkan runtime error `Error: {code: ..., details: Null, hint: Null, message: ...}` saat route memanggil data dari Supabase.
