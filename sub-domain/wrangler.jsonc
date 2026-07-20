@@ -33,7 +33,7 @@
   },
   "routes": [
     {
-      "pattern": "webinar.hoscademy.com",
+      "pattern": "konsultasi.promptcamp.space",
       "custom_domain": true
     }
   ]

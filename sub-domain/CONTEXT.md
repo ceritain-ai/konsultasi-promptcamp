@@ -6,7 +6,7 @@ Aplikasi **event landing page builder** untuk Hoscademy.
 Admin membuat event via dashboard, setiap event otomatis punya landing page publik di `/{slug}`.  
 Pengunjung isi form → data lead masuk Supabase → redirect ke WhatsApp group.
 
-**Domain produksi:** `webinar.hoscademy.com` (Cloudflare Workers via OpenNext)
+**Domain produksi:** `konsultasi.promptcamp.space` (Cloudflare Workers via OpenNext)
 
 ---
 

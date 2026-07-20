@@ -1,11 +1,19 @@
 # ERRORS
 
+## 2026-07-20 — Netlify config file name mismatch
+- context: Persiapan deploy ke Netlify untuk Next.js app di subfolder `sub-domain`.
+- symptom: User meminta `netlify.json`, tapi Netlify memakai `netlify.toml` sebagai config file resmi.
+- root cause: Salah nama format config; memakai `netlify.json` akan diabaikan Netlify.
+- fix: Tambahkan root-level `netlify.toml` dengan `base = "sub-domain"`, `command = "npm run build"`, dan `NODE_VERSION = "24"`.
+- smoke test: Parse `netlify.toml` dengan Python `tomllib` sukses.
+- prevention note: Untuk Netlify, gunakan `netlify.toml` di root repo kecuali semua setting diatur dari UI.
+
 ## 2026-07-20 — OpenNext Wrangler deploy gagal `CLOUDFLARE_API_TOKEN` kosong
 - context: GitHub Actions menjalankan `npm run deploy` via OpenNext setelah build berhasil.
 - symptom: Error dari Wrangler: `In a non-interactive environment, it's necessary to set a CLOUDFLARE_API_TOKEN environment variable`.
 - root cause: Repository Github belum dipasang secrets `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID`. Workflow memanggil `${{ secrets.CLOUDFLARE_API_TOKEN }}` namun nilainya *empty string*, sehingga gagal login.
-- fix: (Tindakan Manual User) Tambahkan `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID` di Settings > Secrets and Variables > Actions di Github repository.
-- prevention note: Sebelum menjalankan workflow deploy yang menyasar layanan pihak ketiga (Cloudflare, AWS, dll), pastikan credential API sudah diset di repo secrets.
+- fix: (Tindakan Manual User) Tambahkan `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID` di Settings > Secrets and Variables > Actions di Github repository. Setelah itu route Worker juga harus diarahkan ke `konsultasi.promptcamp.space`, bukan `webinar.hoscademy.com`.
+- prevention note: Sebelum menjalankan workflow deploy yang menyasar layanan pihak ketiga (Cloudflare, AWS, dll), pastikan credential API sudah diset di repo secrets dan domain route di `wrangler.jsonc` sesuai domain produksi aktif.
 
 ## 2026-07-20 — OpenNext deploy gagal saat build: `Error: supabaseKey is required`
 - context: Workflow `.github/workflows/cloudflare-deploy.yml` jalan dengan `npm run deploy` via OpenNext di GitHub Actions.
