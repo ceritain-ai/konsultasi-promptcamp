@@ -8,6 +8,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://lhssqfacvfytmzeideil.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_R1kn1EOyBWOR42P86-lzYQ_nrwz4O5T
+      SUPABASE_SERVICE_ROLE_KEY: dummy_build_key
     defaults:
       run:
         working-directory: sub-domain
