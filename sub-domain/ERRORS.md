@@ -1,5 +1,12 @@
 # ERRORS
 
+## 2026-07-20 — OpenNext Wrangler deploy gagal `CLOUDFLARE_API_TOKEN` kosong
+- context: GitHub Actions menjalankan `npm run deploy` via OpenNext setelah build berhasil.
+- symptom: Error dari Wrangler: `In a non-interactive environment, it's necessary to set a CLOUDFLARE_API_TOKEN environment variable`.
+- root cause: Repository Github belum dipasang secrets `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID`. Workflow memanggil `${{ secrets.CLOUDFLARE_API_TOKEN }}` namun nilainya *empty string*, sehingga gagal login.
+- fix: (Tindakan Manual User) Tambahkan `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID` di Settings > Secrets and Variables > Actions di Github repository.
+- prevention note: Sebelum menjalankan workflow deploy yang menyasar layanan pihak ketiga (Cloudflare, AWS, dll), pastikan credential API sudah diset di repo secrets.
+
 ## 2026-07-20 — OpenNext deploy gagal saat build: `Error: supabaseKey is required`
 - context: Workflow `.github/workflows/cloudflare-deploy.yml` jalan dengan `npm run deploy` via OpenNext di GitHub Actions.
 - symptom: Build step di dalam OpenNext gagal dengan log `Error: Failed to collect configuration for /admin. [cause]: Error: supabaseKey is required.`
