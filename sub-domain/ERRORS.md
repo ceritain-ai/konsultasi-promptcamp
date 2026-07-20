@@ -1,5 +1,13 @@
 # ERRORS
 
+## 2026-07-20 — GitHub Actions Workers deploy gagal `npx failed with exit code 1` pada Wrangler 4
+- context: Workflow `.github/workflows/cloudflare-deploy.yml` jalankan `wrangler-action` command `deploy` di project OpenNext.
+- symptom: Action `cloudflare/wrangler-action@v3` gagal dengan exit code 1 meskipun Wrangler sudah `4.112.0`.
+- root cause: Action mencoba run `npx wrangler deploy`. Project OpenNext harusnya run `opennextjs-cloudflare deploy` yang mengelola step internal, bukan raw Wrangler.
+- fix: Hapus `wrangler-action`. Ganti run langsung ke `npm run deploy` dengan env `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID`.
+- smoke test: Trigger push/workflow_dispatch; job deploy berhasil karena run OpenNext CLI.
+- prevention note: Project Next.js + Cloudflare via OpenNext deploy dengan command pembungkus OpenNext (`npm run deploy`), jangan pakai `wrangler-action` standar Cloudflare Workers biasa.
+
 ## 2026-07-20 — GitHub Actions Pages deploy gagal `npx failed with exit code 1`
 - context: Workflow `.github/workflows/deploy-cloudflare-pages.yml` jalan di push ke main.
 - symptom: `cloudflare/wrangler-action@v3` install Wrangler `3.90.0` lalu `Error: The process '/usr/local/bin/npx' failed with exit code 1`.
