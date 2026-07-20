@@ -1,5 +1,13 @@
 # ERRORS
 
+## 2026-07-20 — OpenNext deploy gagal saat build: `Error: supabaseKey is required`
+- context: Workflow `.github/workflows/cloudflare-deploy.yml` jalan dengan `npm run deploy` via OpenNext di GitHub Actions.
+- symptom: Build step di dalam OpenNext gagal dengan log `Error: Failed to collect configuration for /admin. [cause]: Error: supabaseKey is required.`
+- root cause: OpenNext melakukan prerendering (SSG) / static page generation waktu build. Karena `.env.local` tidak ikut di-*push* ke git, build-time env vars (terutama `SUPABASE_SERVICE_ROLE_KEY` atau `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`) kosong. Script `lib/supabase.ts` lempar error ketika inisialisasi client.
+- fix: Inject `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, dan `SUPABASE_SERVICE_ROLE_KEY: dummy_build_key` langsung di level job `env` file `.github/workflows/cloudflare-deploy.yml`. (Secret key asli tidak perlu diexpose saat build, cukup string "dummy" supaya init client jalan).
+- smoke test: `git push` → action run berhasil tembus fase pre-rendering dan build sukses di GitHub Actions.
+- prevention note: Selalu inject env vars yang diwajibkan oleh code module (seperti Supabase config) ke build step, walau nilainya dummy, jika module itu dipanggil dalam alur static render/build.
+
 ## 2026-07-20 — GitHub Actions Workers deploy gagal `npx failed with exit code 1` pada Wrangler 4
 - context: Workflow `.github/workflows/cloudflare-deploy.yml` jalankan `wrangler-action` command `deploy` di project OpenNext.
 - symptom: Action `cloudflare/wrangler-action@v3` gagal dengan exit code 1 meskipun Wrangler sudah `4.112.0`.
