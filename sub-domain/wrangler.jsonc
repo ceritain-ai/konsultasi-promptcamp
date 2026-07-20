@@ -1,0 +1,40 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "hoscademy-app",
+  "compatibility_date": "2026-07-14",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "hoscademy-app"
+    }
+  ],
+  "images": {
+    "binding": "IMAGES"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://lhssqfacvfytmzeideil.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_R1kn1EOyBWOR42P86-lzYQ_nrwz4O5T",
+    "ADMIN_EMAIL": "admhoscademy@mail.com",
+    "R2_ACCOUNT_ID": "78b14406c7501c11528094ec439a7e7f",
+    "R2_ACCESS_KEY_ID": "4a7a7584b006afe2a17ac23a4b6b944a",
+    "R2_BUCKET_NAME": "konsultasi-promptcamp",
+    "R2_PUBLIC_URL": "https://pub-aa3550fcaddf41e29bf4e36fb3e2726f.r2.dev"
+  },
+  "routes": [
+    {
+      "pattern": "webinar.hoscademy.com",
+      "custom_domain": true
+    }
+  ]
+}
