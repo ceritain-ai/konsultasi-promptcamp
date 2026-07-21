@@ -5,6 +5,7 @@ import { LandingForm } from '@/components/landing-form';
 import { MetaPixel } from '@/components/meta-pixel';
 import { getEventBySlug } from '@/lib/data';
 import { getProxiedImageUrl } from '@/lib/r2';
+import { marked } from 'marked';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -62,7 +63,21 @@ export default async function EventPage({ params }: PageProps) {
             <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
               {event.title}
             </h1>
-            <div className="text-sm leading-relaxed text-slate-300" dangerouslySetInnerHTML={{ __html: event.description || 'Isi detail event dari dashboard admin.' }} />
+            <div 
+              className="text-sm leading-relaxed text-slate-300 prose prose-invert prose-slate prose-sm max-w-none" 
+              dangerouslySetInnerHTML={{ 
+                __html: marked.parse(
+                  (event.description || 'Isi detail event dari dashboard admin.')
+                    .replace(/<div[^>]*>/gi, '\n')
+                    .replace(/<\/div>/gi, '')
+                    .replace(/<p[^>]*>/gi, '\n')
+                    .replace(/<\/p>/gi, '')
+                    .replace(/<br\s*\/?>/gi, '\n')
+                    .replace(/&nbsp;/gi, ' '), 
+                  { async: false, breaks: true }
+                ) as string 
+              }} 
+            />
           </div>
           
           <div className="mt-8">
