@@ -20,3 +20,16 @@ export function r2PublicUrl(key: string) {
   if (base && !base.includes('PLACEHOLDER')) return `${base.replace(/\/$/, '')}/${key}`;
   return `https://${accountId}.r2.dev/${key}`;
 }
+
+export function getProxiedImageUrl(url: string | null) {
+  if (!url) return url;
+  if (url.includes('.r2.dev/') || url.includes('.r2.cloudflarestorage.com/')) {
+    try {
+      const urlObj = new URL(url);
+      return `/api/media${urlObj.pathname}`;
+    } catch {
+      return url;
+    }
+  }
+  return url;
+}

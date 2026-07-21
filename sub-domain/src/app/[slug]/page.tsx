@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { LandingForm } from '@/components/landing-form';
 import { MetaPixel } from '@/components/meta-pixel';
 import { getEventBySlug } from '@/lib/data';
+import { getProxiedImageUrl } from '@/lib/r2';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -27,7 +28,7 @@ export default async function EventPage({ params }: PageProps) {
 
   const bgStyle = {
     backgroundColor: event.bg_color || '#020617',
-    backgroundImage: event.bg_image_url ? `linear-gradient(rgba(2,6,23,0.7), rgba(2,6,23,0.85)), url(${event.bg_image_url})` : undefined,
+    backgroundImage: event.bg_image_url ? `linear-gradient(rgba(2,6,23,0.7), rgba(2,6,23,0.85)), url(${getProxiedImageUrl(event.bg_image_url)})` : undefined,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
   } as const;
@@ -41,7 +42,7 @@ export default async function EventPage({ params }: PageProps) {
         <section className="w-full">
           {event.poster_url ? (
             <Image
-              src={event.poster_url}
+              src={getProxiedImageUrl(event.poster_url)!}
               alt={event.title}
               width={480}
               height={640}
