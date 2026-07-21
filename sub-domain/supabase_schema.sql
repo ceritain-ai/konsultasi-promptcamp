@@ -17,11 +17,19 @@ CREATE TABLE IF NOT EXISTS public.events (
 CREATE TABLE IF NOT EXISTS public.registrations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     event_slug TEXT REFERENCES public.events(slug) ON DELETE CASCADE,
-    email TEXT NOT NULL,
     name TEXT NOT NULL,
-    phone TEXT NOT NULL,
+    brand_name TEXT,
+    social_media TEXT,
+    problem TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration for existing databases (run once in Supabase SQL Editor):
+-- ALTER TABLE public.registrations ALTER COLUMN email DROP NOT NULL;
+-- ALTER TABLE public.registrations ALTER COLUMN phone DROP NOT NULL;
+-- ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS brand_name TEXT;
+-- ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS social_media TEXT;
+-- ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS problem TEXT;
 
 -- Enable RLS (Optional, can be customized)
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;

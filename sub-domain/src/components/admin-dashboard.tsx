@@ -150,9 +150,10 @@ export function AdminDashboard({ initialEvents, initialRegistrations }: AdminDas
                   <table className="w-full text-left text-sm">
                     <thead>
                       <tr>
-                        <th className="pb-3">Nama</th>
-                        <th className="pb-3">Email</th>
-                        <th className="pb-3">WhatsApp</th>
+                        <th className="pb-3">Nama Pribadi</th>
+                        <th className="pb-3">Nama Brand</th>
+                        <th className="pb-3">Sosmed</th>
+                        <th className="pb-3">Masalah yang Ingin di Solve</th>
                         <th className="pb-3 text-right">Waktu</th>
                       </tr>
                     </thead>
@@ -160,14 +161,15 @@ export function AdminDashboard({ initialEvents, initialRegistrations }: AdminDas
                       {selectedRegistrations.map((row) => (
                         <tr key={row.id} className={`border-t ${isDark ? 'border-slate-700' : 'border-[#202020]'}`}>
                           <td className="py-3 pr-4">{row.name}</td>
-                          <td className="py-3 pr-4">{row.email}</td>
-                          <td className="py-3 pr-4">{row.phone}</td>
+                          <td className="py-3 pr-4">{row.brand_name || '-'}</td>
+                          <td className="py-3 pr-4">{row.social_media || '-'}</td>
+                          <td className="py-3 pr-4">{row.problem || '-'}</td>
                           <td className="py-3 text-right text-[12px] opacity-70">{new Date(row.created_at).toLocaleString('id-ID')}</td>
                         </tr>
                       ))}
                       {!selectedRegistrations.length ? (
                         <tr>
-                          <td colSpan={4} className="py-6 text-center opacity-60">Belum ada lead.</td>
+                          <td colSpan={5} className="py-6 text-center opacity-60">Belum ada lead.</td>
                         </tr>
                       ) : null}
                     </tbody>

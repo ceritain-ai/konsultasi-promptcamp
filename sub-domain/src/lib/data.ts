@@ -21,9 +21,10 @@ export type EventRow = {
 export type RegistrationRow = {
   id: string;
   event_slug: string;
-  email: string;
   name: string;
-  phone: string;
+  brand_name: string | null;
+  social_media: string | null;
+  problem: string | null;
   created_at: string;
 };
 

@@ -1,5 +1,30 @@
 # ERRORS
 
+## 2026-07-21 — Ubah field form registrasi (butuh migrasi DB manual)
+- context: Form registrasi diganti dari Email/Nama/Phone jadi: Nama Pribadi, Nama Brand, Sosmed yang Dipakai, Masalah yang Ingin Diselesaikan.
+- symptom: Kolom `email`/`phone` lama NOT NULL di Supabase; insert baru tanpa kolom itu akan gagal sampai migrasi dijalankan.
+- root cause: Schema produksi masih pakai struktur lama.
+- fix: Update `landing-form.tsx`, `api/register/route.ts`, `data.ts` (RegistrationRow), `admin-dashboard.tsx` (tabel lead), dan `supabase_schema.sql`. Migrasi DB harus dijalankan manual di Supabase SQL Editor:
+  `ALTER TABLE public.registrations ALTER COLUMN email DROP NOT NULL; ALTER TABLE public.registrations ALTER COLUMN phone DROP NOT NULL; ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS brand_name TEXT; ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS social_media TEXT; ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS problem TEXT;`
+- smoke test: Setelah migrasi + deploy, submit form di `/{slug}` → 200 + row baru berisi brand_name/social_media/problem; tabel lead admin menampilkan 4 kolom baru.
+- prevention note: Setiap ubah field form, sinkronkan 4 titik: form component, API route, type row, tabel admin — plus migrasi DB sebelum deploy.
+
+## 2026-07-21 — Branding UI masih tampil `Hoscademy`
+- context: User minta semua branding yang tampil di UI diganti dari `Hoscademy` ke `Promptcamp`, tanpa mengubah nama internal service/worker.
+- symptom: Homepage, metadata layout, dan metadata event page masih menampilkan `Hoscademy` ke user.
+- root cause: String branding UI hardcoded di beberapa komponen/page metadata, terpisah dari nama service internal.
+- fix: Ganti string user-facing di `src/app/page.tsx`, `src/app/layout.tsx`, dan `src/app/[slug]/page.tsx` menjadi `Promptcamp`.
+- smoke test: `npm run build` perlu dijalankan untuk verifikasi penuh, tapi sedang tertahan karena classifier Bash sementara unavailable. Perubahan bersifat string-only pada UI.
+- prevention note: Pisahkan branding user-facing dari identifier internal (`hoscademy-app`, cookie key, worker name) supaya rebrand tidak menyentuh infrastruktur.
+
+## 2026-07-21 — `/admin` runtime 500 karena Worker secret kosong
+- context: Akses live URL `/admin` di Cloudflare Workers.
+- symptom: Halaman mengembalikan HTTP 500 Internal Server Error saat dibuka dengan cookie valid (atau bypass login).
+- root cause: `SUPABASE_SERVICE_ROLE_KEY` (dan `ADMIN_PASSWORD`) diperlukan oleh runtime tapi tidak dipublish sebagai secret di Worker Cloudflare (sebelumnya cuma ada variabel *public* di `wrangler.jsonc`). Akibatnya `supabaseAdmin` client gagal dibuat dengan kredensial kosong, sehingga call database `getEvents()` throw error.
+- fix: Upload nilai secret `SUPABASE_SERVICE_ROLE_KEY` dan `ADMIN_PASSWORD` dari `.env.local` langsung ke Worker lewat `wrangler secret put`. Ganti juga `ADMIN_EMAIL` public var di `wrangler.jsonc` menjadi `admin@promptcamp.space`.
+- smoke test: `curl -I https://konsultasi.promptcamp.space/admin` mengembalikan 307 ke login (sukses melewati root layout tanpa crash), dan setelah login POST dengan credential valid, `/admin` render HTTP 200 dengan lancar.
+- prevention note: Env variable yang bersifat rahasia (DB keys, password auth) harus secara eksplisit ditambahkan ke Cloudflare lewat *secrets store* (`wrangler secret put`), karena tidak otomatis terbaca dari `.env.local` saat dideploy.
+
 ## 2026-07-21 — Deploy sukses setelah hapus zone route dari wrangler.jsonc
 - context: Deploy Worker OpenNext ke akun Cloudflare Ferilukmansyah via GitHub Actions.
 - symptom: Deploy gagal di step attach route: `A request to the Cloudflare API (/zones/.../workers/routes) failed. Authentication error [code: 10000]`, meski upload Worker sukses.

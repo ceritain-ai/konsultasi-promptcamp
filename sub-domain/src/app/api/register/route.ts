@@ -6,12 +6,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const slug = String(body.slug || '').trim();
-    const email = String(body.email || '').trim();
     const name = String(body.name || '').trim();
-    const phoneCode = String(body.phoneCode || '+62').trim();
-    const phone = String(body.phone || '').trim();
+    const brandName = String(body.brandName || '').trim();
+    const socialMedia = String(body.socialMedia || '').trim();
+    const problem = String(body.problem || '').trim();
 
-    if (!slug || !email || !name || !phone) {
+    if (!slug || !name || !brandName || !socialMedia || !problem) {
       return NextResponse.json({ error: 'Data wajib belum lengkap.' }, { status: 400 });
     }
 
@@ -22,9 +22,10 @@ export async function POST(request: Request) {
 
     const { error } = await supabaseAdmin.from('registrations').insert({
       event_slug: slug,
-      email,
       name,
-      phone: `${phoneCode}${phone}`,
+      brand_name: brandName,
+      social_media: socialMedia,
+      problem,
     });
 
     if (error) throw error;

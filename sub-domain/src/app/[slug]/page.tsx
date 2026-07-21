@@ -12,10 +12,10 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const event = await getEventBySlug(slug);
-  if (!event) return { title: 'Hoscademy' };
+  if (!event) return { title: 'Promptcamp' };
   return {
-    title: `Hoscademy - ${event.title}`,
-    description: event.description || 'Webinar Hoscademy',
+    title: `Promptcamp - ${event.title}`,
+    description: event.description || 'Webinar Promptcamp',
   };
 }
 

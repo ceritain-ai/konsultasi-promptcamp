@@ -26,13 +26,13 @@ export function LandingForm({
 
     const payload = {
       slug,
-      email: String(formData.get('email') || '').trim(),
       name: String(formData.get('name') || '').trim(),
-      phoneCode: String(formData.get('phoneCode') || '+62').trim(),
-      phone: String(formData.get('phone') || '').trim(),
+      brandName: String(formData.get('brandName') || '').trim(),
+      socialMedia: String(formData.get('socialMedia') || '').trim(),
+      problem: String(formData.get('problem') || '').trim(),
     };
 
-    if (!payload.email || !payload.name || !payload.phone) {
+    if (!payload.name || !payload.brandName || !payload.socialMedia || !payload.problem) {
       setError('Lengkapi semua field.');
       setLoading(false);
       return;
@@ -65,16 +65,7 @@ export function LandingForm({
       className="space-y-4 px-4 pb-10 pt-2 text-left"
     >
       <div>
-        <label className="mb-2 block text-sm font-semibold text-white">Email</label>
-        <input
-          name="email"
-          type="email"
-          required
-          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 outline-none focus:border-emerald-500"
-        />
-      </div>
-      <div>
-        <label className="mb-2 block text-sm font-semibold text-white">Name</label>
+        <label className="mb-2 block text-sm font-semibold text-white">Nama Pribadi</label>
         <input
           name="name"
           type="text"
@@ -83,25 +74,32 @@ export function LandingForm({
         />
       </div>
       <div>
-        <label className="mb-2 block text-sm font-semibold text-white">Phone Number</label>
-        <div className="flex gap-1">
-          <select
-            name="phoneCode"
-            defaultValue="+62"
-            className="rounded-lg border border-slate-300 bg-white px-3 py-3 text-base text-slate-900 outline-none"
-          >
-            <option value="+62">+62</option>
-            <option value="+60">+60</option>
-            <option value="+65">+65</option>
-            <option value="+1">+1</option>
-          </select>
-          <input
-            name="phone"
-            type="tel"
-            required
-            className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 outline-none"
-          />
-        </div>
+        <label className="mb-2 block text-sm font-semibold text-white">Nama Brand</label>
+        <input
+          name="brandName"
+          type="text"
+          required
+          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 outline-none focus:border-emerald-500"
+        />
+      </div>
+      <div>
+        <label className="mb-2 block text-sm font-semibold text-white">Sosmed yang Dipakai</label>
+        <input
+          name="socialMedia"
+          type="text"
+          required
+          placeholder="Contoh: Instagram @brandkamu"
+          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 outline-none focus:border-emerald-500"
+        />
+      </div>
+      <div>
+        <label className="mb-2 block text-sm font-semibold text-white">Masalah yang Ingin di Solve</label>
+        <textarea
+          name="problem"
+          required
+          rows={3}
+          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 outline-none focus:border-emerald-500"
+        />
       </div>
       {error ? <p className="text-sm text-rose-400">{error}</p> : null}
       
