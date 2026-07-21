@@ -1,5 +1,13 @@
 # ERRORS
 
+## 2026-07-21 — Deploy sukses setelah hapus zone route dari wrangler.jsonc
+- context: Deploy Worker OpenNext ke akun Cloudflare Ferilukmansyah via GitHub Actions.
+- symptom: Deploy gagal di step attach route: `A request to the Cloudflare API (/zones/.../workers/routes) failed. Authentication error [code: 10000]`, meski upload Worker sukses.
+- root cause: Token API punya akses Workers Scripts tapi tidak punya permission zone-level Workers Routes untuk zone `promptcamp.space` (kemungkinan zone belum ada/aktif di akun Ferilukmansyah).
+- fix: Hapus blok `routes` dari `wrangler.jsonc` (deploy worker-only). Custom domain ditambahkan lagi nanti setelah zone aktif + token diberi permission zone.
+- smoke test: `curl https://hoscademy-app.ferilukmansyah.workers.dev/` → `200`, homepage app render. Run: https://github.com/ceritain-ai/konsultasi-promptcamp/actions/runs/29795957306
+- prevention note: Kalau deploy gagal setelah "Uploaded", masalahnya di route/domain binding, bukan build. Pisahkan deploy worker dari binding domain saat debugging.
+
 ## 2026-07-20 — Netlify config file name mismatch
 - context: Persiapan deploy ke Netlify untuk Next.js app di subfolder `sub-domain`.
 - symptom: User meminta `netlify.json`, tapi Netlify memakai `netlify.toml` sebagai config file resmi.
