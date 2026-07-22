@@ -153,3 +153,26 @@ const BASE='http://localhost:3001';
 Hasil: `UPLOAD STATUS: 200`, response `{"key":"media/...","url":"https://pub-.../media/..."}`.
 
 **Prevention:** Jangan panggil `redirect()` dari `next/navigation` di dalam Route Handler (`route.ts`). Untuk API routes yang butuh cek auth, selalu return `NextResponse.json(..., { status: 401 })`. Gunakan `redirect()` hanya di Server Component/Page.
+
+## 2026-07-22 — POST /api/admin/upload 500 (Missing R2 Secret)
+
+- **Context:** Test upload live admin site Cloudflare Worker (`konsultasi.promptcamp.space/api/admin/upload`).
+- **Symptom:** POST request throws 500 Internal Server Error in live Cloudflare Worker but works locally.
+- **Root Cause:** `R2_SECRET_ACCESS_KEY` was missing from Cloudflare Worker secrets. The `S3Client` instance could not sign the request for `@aws-sdk/client-s3` without the secret, causing an unhandled error inside the route.
+- **Fix:** Upload the secret from `.env.local` to the worker using `cat .env.local | grep R2_SECRET_ACCESS_KEY | cut -d '=' -f 2 | npx wrangler secret put R2_SECRET_ACCESS_KEY`.
+- **Smoke Test:** 
+  ```bash
+  node -e "
+  const BASE='https://konsultasi.promptcamp.space';
+  (async()=>{
+    const login = await fetch(BASE+'/api/admin/login', { method:'POST', body:new URLSearchParams({email:'admin@promptcamp.space', password:'promptdesainer@11'}), redirect:'manual' });
+    const cookie = login.headers.get('set-cookie')?.split(';')[0];
+    const form = new FormData();
+    form.append('file', new Blob(['test-content-2'], { type: 'image/png' }), 'test2.png');
+    const upload = await fetch(BASE+'/api/admin/upload', { method:'POST', headers:{ Cookie: cookie }, body: form });
+    console.log('STATUS:', upload.status);
+  })();
+  "
+  ```
+  Returns `STATUS: 200`.
+- **Prevention:** Always check `wrangler secret list` when adding new backend integrations (like R2) to ensure all `.env.local` secrets are replicated in Cloudflare.
