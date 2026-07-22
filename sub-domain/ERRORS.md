@@ -115,3 +115,41 @@
   - `workerd: true`
 - smoke test: `pnpm install --reporter append-only` selesai sukses dengan exit code `0` pada 2026-07-19.
 - prevention note: Commit `pnpm-workspace.yaml` setelah approval pertama, supaya mesin lain tidak kena blok yang sama.
+
+## 2026-07-22 — POST /api/admin/upload 500 saat upload gambar
+
+**Context:** User melaporkan error 500 di `api/admin/upload:1` saat upload gambar dari dashboard admin.
+
+**Symptom:** Request upload gagal dengan status 500 (atau redirect tak terduga ke halaman login dengan HTML alih-alih JSON).
+
+**Root cause:** `src/app/api/admin/upload/route.ts` memanggil `requireAdmin()` dari `src/lib/auth.ts`, yang menggunakan `redirect('/admin/login')` dari `next/navigation`. Fungsi `redirect()` melempar exception khusus (`NEXT_REDIRECT`) yang didesain untuk Server Components/Pages, bukan Route Handlers (API routes). Saat dipanggil dari Route Handler, exception ini tidak ditangani dengan benar sehingga menghasilkan response tidak valid/500 alih-alih JSON error yang rapi.
+
+**Fix:**
+1. Tambah fungsi baru `checkAdmin()` di `src/lib/auth.ts` yang mengembalikan `boolean` (tanpa redirect):
+   ```ts
+   export async function checkAdmin() {
+     const store = await cookies();
+     return store.get(COOKIE_NAME)?.value === '1';
+   }
+   ```
+2. Update `src/app/api/admin/upload/route.ts` untuk memakai `checkAdmin()` dan return `NextResponse.json({ error: 'Unauthorized' }, { status: 401 })` bila sesi admin tidak valid, bukan memanggil `requireAdmin()`.
+3. `requireAdmin()` (dengan `redirect()`) tetap dipertahankan hanya untuk dipakai di Server Component (`src/app/admin/page.tsx`), karena di sana `redirect()` valid.
+
+**Smoke test:**
+```bash
+node -e "
+const BASE='http://localhost:3001';
+(async()=>{
+  const login = await fetch(BASE+'/api/admin/login', { method:'POST', body:new URLSearchParams({email:'admin@promptcamp.space', password:'promptdesainer@11'}), redirect:'manual' });
+  const cookie = login.headers.get('set-cookie')?.split(';')[0];
+  const form = new FormData();
+  form.append('file', new Blob(['test-content'], { type: 'image/png' }), 'test.png');
+  const upload = await fetch(BASE+'/api/admin/upload', { method:'POST', headers:{ Cookie: cookie }, body: form });
+  console.log('UPLOAD STATUS:', upload.status);
+  console.log('BODY:', await upload.text());
+})();
+"
+```
+Hasil: `UPLOAD STATUS: 200`, response `{"key":"media/...","url":"https://pub-.../media/..."}`.
+
+**Prevention:** Jangan panggil `redirect()` dari `next/navigation` di dalam Route Handler (`route.ts`). Untuk API routes yang butuh cek auth, selalu return `NextResponse.json(..., { status: 401 })`. Gunakan `redirect()` hanya di Server Component/Page.

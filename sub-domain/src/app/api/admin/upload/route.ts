@@ -1,12 +1,15 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/auth';
+import { checkAdmin } from '@/lib/auth';
 import { r2, r2Bucket, r2PublicUrl } from '@/lib/r2';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
-  await requireAdmin();
+  const isAdmin = await checkAdmin();
+  if (!isAdmin) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   const formData = await request.formData();
   const file = formData.get('file');

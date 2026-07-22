@@ -32,3 +32,8 @@ export async function requireAdmin() {
     redirect('/admin/login');
   }
 }
+
+export async function checkAdmin() {
+  const store = await cookies();
+  return store.get(COOKIE_NAME)?.value === '1';
+}

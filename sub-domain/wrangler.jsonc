@@ -23,8 +23,8 @@
     "enabled": true
   },
   "vars": {
-    "NEXT_PUBLIC_SUPABASE_URL": "https://lhssqfacvfytmzeideil.supabase.co",
-    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_R1kn1EOyBWOR42P86-lzYQ_nrwz4O5T",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://ektvqfrqtbwcsqeohvpq.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_t5ACAg2RRZ1mM7jCVkYoRg_KF0EpaS_",
     "ADMIN_EMAIL": "admin@promptcamp.space",
     "R2_ACCOUNT_ID": "78b14406c7501c11528094ec439a7e7f",
     "R2_ACCESS_KEY_ID": "4a7a7584b006afe2a17ac23a4b6b944a",
