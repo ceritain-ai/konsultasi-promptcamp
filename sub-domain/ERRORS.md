@@ -176,3 +176,11 @@ Hasil: `UPLOAD STATUS: 200`, response `{"key":"media/...","url":"https://pub-...
   ```
   Returns `STATUS: 200`.
 - **Prevention:** Always check `wrangler secret list` when adding new backend integrations (like R2) to ensure all `.env.local` secrets are replicated in Cloudflare.
+
+## 2026-07-24 — Favicon masih tampil lama
+- context: User ganti favicon di `sub-domain` tapi browser masih tampilkan icon lama.
+- symptom: `public/favicon.ico` sudah baru, tapi hasil serve masih lama.
+- root cause: Next App Router pakai `src/app/icon.png` dan build output `.next/server/app/icon.png.body`; browser juga cache favicon agresif. Rebuild sebelumnya belum dipakai, jadi file build masih stale.
+- fix: Pastikan `src/app/icon.png` dan `public/favicon.ico` sinkron, rebuild app, lalu hard refresh/clear browser cache.
+- smoke test: `pnpm exec next start -p 3024` lalu `fetch('http://127.0.0.1:3024/icon.png')` mengembalikan `200 image/png` dengan ukuran `77111` byte, sama dengan source file.
+- prevention note: Setiap ubah favicon/icon, cek `src/app/icon.png` + `public/favicon.ico` + output build; jangan cuma update satu file.
