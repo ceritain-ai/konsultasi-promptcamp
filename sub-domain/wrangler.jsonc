@@ -21,7 +21,14 @@
     "binding": "IMAGES"
   },
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": false
+    }
   },
   "vars": {
     "NEXT_PUBLIC_SUPABASE_URL": "https://ektvqfrqtbwcsqeohvpq.supabase.co",
@@ -31,7 +38,8 @@
     "R2_ACCESS_KEY_ID": "4a7a7584b006afe2a17ac23a4b6b944a",
     "R2_BUCKET_NAME": "konsultasi-promptcamp",
     "R2_PUBLIC_URL": "https://pub-aa3550fcaddf41e29bf4e36fb3e2726f.r2.dev"
-  }
+  },
+  
   // ponytail: zone route removed — token lacks zone Workers Routes permission for promptcamp.space.
   // Re-add routes [{ "pattern": "konsultasi.promptcamp.space", "custom_domain": true }]
   // after the zone is active in the Ferilukmansyah account and the token has zone-level access.
